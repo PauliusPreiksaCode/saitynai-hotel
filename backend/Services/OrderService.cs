@@ -1,6 +1,7 @@
 ﻿using backend.Entities;
 using backend.Interfaces;
 using backend.RequestDtos.Order;
+using backend.ResponseDtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;
@@ -16,28 +17,49 @@ public class OrderService : IOrderService
         _calculationsService = calculationsService;
     }
 
-    public async Task<List<Order>> GetAllOrders()
+    public async Task<List<OrderResponse>> GetAllOrders(Guid hotelId)
     {
-        return await _context.Order
+        var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(hotelId));
+        
+        if (hotel is null)
+        {
+            throw new Exception("Hotel not found");
+        }
+
+        var orders = await _context.Order
             .Include(x => x.Hotel)
+            .Where(o => o.Hotel.Id.Equals(hotelId))
             .ToListAsync();
+
+        return orders.Select(o => o.ToDto())
+            .ToList();
     }
 
-    public Order GetOrderById(Guid id)
+    public async Task<OrderResponse> GetOrderById(Guid hotelId, Guid id)
     {
-        var order = _context.Order.FirstOrDefault(x => x.Id.Equals(id));
+        var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(hotelId));
+        
+        if (hotel is null)
+        {
+            throw new Exception("Hotel not found");
+        }
 
+        var order = await _context.Order
+            .Include(x => x.Hotel)
+            .Where(o => o.Hotel.Id.Equals(hotelId))
+            .FirstOrDefaultAsync(o => o.Id.Equals(id));
+        
         if (order is null)
         {
             throw new Exception("Order not found");
         }
 
-        return order;
+        return order.ToDto();
     }
 
-    public async Task AddOrder(AddOrderRequest request)
+    public async Task<OrderResponse> AddOrder(Guid hotelId, AddOrderRequest request)
     {
-        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(request.HotelId));
+        var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(hotelId));
 
         if (hotel is null)
         {
@@ -45,7 +67,7 @@ public class OrderService : IOrderService
         }
 
         var price = _calculationsService.CalculatePrice(request.PeopleCount, request.PeopleCount, request.Breakfast,
-            request.RoomType);
+            request.RoomType, hotel);
 
         var order = new Order
         {
@@ -60,26 +82,31 @@ public class OrderService : IOrderService
 
         await _context.AddAsync(order);
         await _context.SaveChangesAsync();
+
+        return order.ToDto();
     }
 
-    public async Task UpdateOrder(EditOrderRequest request)
+    public async Task<OrderResponse> UpdateOrder(Guid hotelId, Guid id, EditOrderRequest request)
     {
-        var order = _context.Order.FirstOrDefault(x => x.Id.Equals(request.Id));
-
-        if (order is null)
-        {
-            throw new Exception("Order not found");
-        }
-
-        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(request.HotelId));
+        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(hotelId));
 
         if (hotel is null)
         {
             throw new Exception("Hotel not found");
         }
 
+        var order = await _context.Order
+            .Include(x => x.Hotel)
+            .Where(o => o.Hotel.Id.Equals(hotelId))
+            .FirstOrDefaultAsync(o => o.Id.Equals(id));
+            
+        if (order is null)
+        {
+            throw new Exception("Order not found");
+        }
+
         var price = _calculationsService.CalculatePrice(request.PeopleCount, request.PeopleCount, request.Breakfast,
-            request.RoomType);
+            request.RoomType, hotel);
 
         order.RoomType = request.RoomType;
         order.Breakfast = request.Breakfast;
@@ -90,11 +117,24 @@ public class OrderService : IOrderService
         order.Hotel = hotel;
 
         await _context.SaveChangesAsync();
+
+        return order.ToDto();
     }
 
-    public async Task DeleteOrder(Guid id)
+    // TODO: relation check response
+    public async Task DeleteOrder(Guid hotelId, Guid id)
     {
-        var order = _context.Order.FirstOrDefault(x => x.Id.Equals(id));
+        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(hotelId));
+
+        if (hotel is null)
+        {
+            throw new Exception("Hotel not found");
+        }
+        
+        var order = await _context.Order
+            .Include(x => x.Hotel)
+            .Where(o => o.Hotel.Id.Equals(hotelId))
+            .FirstOrDefaultAsync(o => o.Id.Equals(id));
 
         if (order is null)
         {

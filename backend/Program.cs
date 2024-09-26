@@ -1,6 +1,8 @@
 using backend;
 using backend.Interfaces;
 using backend.Services;
+using backend.Validation.Hotel;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -24,6 +26,9 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
+
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddHotelRequestValidator>());
 
 builder.Services.AddTransient<IHotelService, HotelService>();
 builder.Services.AddTransient<IOrderService, OrderService>();

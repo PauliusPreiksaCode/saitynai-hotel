@@ -1,6 +1,7 @@
 ﻿using backend.Entities;
 using backend.Interfaces;
 using backend.RequestDtos.Hotel;
+using backend.ResponseDtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;
@@ -14,40 +15,46 @@ public class HotelService : IHotelService
         _context = context;
     }
 
-    public async Task<List<Hotel>> GetAllHotels()
+    public async Task<List<HotelResponse>> GetAllHotels()
     {
         var hotels = await _context.Hotel.ToListAsync();
-        return hotels;
+        return hotels.Select(h => h.ToDto()).ToList();
     }
 
-    public Hotel GetHotelById(Guid id)
+    public async Task<HotelResponse> GetHotelById(Guid id)
     {
-        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(id));
+        var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(id));
 
         if (hotel is null)
         {
             throw new Exception("Hotel not found");
         }
 
-        return hotel;
+        return hotel.ToDto();
     }
 
-    public async Task AddHotel(AddHotelRequest request)
+    public async Task<HotelResponse> AddHotel(AddHotelRequest request)
     {
         var hotel = new Hotel
         {
             Name = request.Name,
             Location = request.Location,
-            Photo = request.Photo
+            Photo = request.Photo,
+            BreakfastPrice = request.BreakfastPrice,
+            StandardPrice = request.StandardPrice,
+            DeluxePrice = request.DeluxePrice,
+            SuitePrice = request.SuitePrice
         };
 
         await _context.Hotel.AddAsync(hotel);
         await _context.SaveChangesAsync();
+
+        return hotel.ToDto();
     }
 
-    public async Task UpdateHotel(EditHotelRequest request)
+    public async Task<HotelResponse> UpdateHotel(Guid id, EditHotelRequest request)
     {
-        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(request.Id));
+        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(id));
 
         if (hotel is null)
         {
@@ -57,8 +64,14 @@ public class HotelService : IHotelService
         hotel.Name = request.Name;
         hotel.Location = request.Location;
         hotel.Photo = request.Photo;
+        hotel.BreakfastPrice = request.BreakfastPrice;
+        hotel.StandardPrice = request.StandardPrice;
+        hotel.DeluxePrice = request.DeluxePrice;
+        hotel.SuitePrice = request.SuitePrice;
 
         await _context.SaveChangesAsync();
+
+        return hotel.ToDto();
     }
 
     public async Task DeleteHotel(Guid id)
@@ -70,11 +83,9 @@ public class HotelService : IHotelService
             throw new Exception("Hotel not found");
         }
 
-        var orders = await _context.Order
+        var hotelIsBooked = await _context.Order
             .Include(x => x.Hotel)
-            .ToListAsync();
-
-        var hotelIsBooked = orders.Any(order => order.Hotel.Id.Equals(hotel.Id));
+            .AnyAsync(order => order.Hotel.Id.Equals(hotel.Id));
 
         if (hotelIsBooked)
         {

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
-[Route("order")]
+[Route("hotels/{hotelId:guid}/orders")]
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
@@ -18,66 +18,82 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet]
-    [Route("list")]
-    public async Task<IActionResult> GetAllOrders()
+    public async Task<IActionResult> GetAllOrders([FromRoute] Guid hotelId)
     {
         try
         {
-            var orders = await _orderService.GetAllOrders();
+            var orders = await _orderService.GetAllOrders(hotelId);
             return Ok(orders);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return e.Message switch
-            {
-                _ => StatusCode(500, "Error occured while getting orders")
-            };
+            return NotFound("Hotel not found");
         }
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetOrderById([FromQuery] Guid id)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetOrderById([FromRoute] Guid hotelId, [FromRoute] Guid id)
     {
         try
         {
-            var order = _orderService.GetOrderById(id);
+            var order = await _orderService.GetOrderById(hotelId, id);
             return Ok(order);
         }
         catch (Exception e)
         {
             return e.Message switch
             {
-                "Order not found" => NotFound("Order not found"),
-                _ => StatusCode(500, "Error occured while getting order")
+                "Hotel not found" => NotFound("Order not found"),
+                "Order not found" => NotFound("Order not found")
             };
         }
     }
     
     [HttpPost]
-    public async Task<IActionResult> AddOrder([FromBody] AddOrderRequest request)
+    public async Task<IActionResult> AddOrder([FromRoute] Guid hotelId, [FromBody] AddOrderRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            return StatusCode(422, new { errors });
+        }
+        
         try
         {
-            await _orderService.AddOrder(request);
-            return Ok();
+            var order = await _orderService.AddOrder(hotelId, request);
+            return CreatedAtAction(nameof(AddOrder), new { id = order.Id }, order);
         }
         catch (Exception e)
         {
             return e.Message switch
             {
                 "Hotel not found" => NotFound("Hotel not found"),
-                _ => StatusCode(500, "Error occured while adding order")
+                _ => StatusCode(400, "Wrong JSON format")
             };
         }
     }
     
-    [HttpPatch]
-    public async Task<IActionResult> UpdateOrder([FromBody] EditOrderRequest request)
+    [HttpPut]
+    [Route("{id:guid}")]
+    public async Task<IActionResult> UpdateOrder([FromRoute] Guid hotelId, [FromRoute] Guid id, [FromBody] EditOrderRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            return StatusCode(422, new { errors });
+        }
+        
         try
         {
-            await _orderService.UpdateOrder(request);
-            return Ok();
+            var order = await _orderService.UpdateOrder(hotelId, id, request);
+            return Ok(order);
         }
         catch (Exception e)
         {
@@ -91,37 +107,20 @@ public class OrderController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<IActionResult> DeleteOrder([FromQuery] Guid id)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> DeleteOrder([FromRoute] Guid hotelId, [FromRoute] Guid id)
     {
         try
         {
-            await _orderService.DeleteOrder(id);
-            return Ok();
+            await _orderService.DeleteOrder(hotelId, id);
+            return NoContent();
         }
         catch (Exception e)
         {
             return e.Message switch
             {
-                "Order not found" => NotFound("Order not found"),
-                _ => StatusCode(500, "Error occured while updating order")
-            };
-        }
-    }
-
-    [HttpPost]
-    [Route("price")]
-    public async Task<IActionResult> GetOrderPrice([FromBody] GetPriceRequest request)
-    {
-        try
-        {
-            var price = _calculationsService.CalculatePrice(request);
-            return Ok(price);
-        }
-        catch (Exception e)
-        {
-            return e.Message switch
-            {
-                _ => StatusCode(500, "Error occured while calculating order price")
+                "Hotel not found" => NotFound("Hotel not found"),
+                "Order not found" => NotFound("Order not found")
             };
         }
     }

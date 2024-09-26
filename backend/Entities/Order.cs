@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using backend.Enums;
+using backend.ResponseDtos;
 
 namespace backend.Entities;
 
@@ -23,4 +24,19 @@ public class Order
     public decimal Price { get; set; }
 
     public required Hotel Hotel { get; set; }
+
+    public OrderResponse ToDto()
+    {
+        return new OrderResponse
+        {
+            Id = Id,
+            RoomType = RoomType,
+            Breakfast = Breakfast,
+            OrderDate = OrderDate,
+            PeopleCount = PeopleCount,
+            Period = Period,
+            Price = Price,
+            Hotel = Hotel.ToDto()
+        };
+    }
 }

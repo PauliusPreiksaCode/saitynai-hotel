@@ -14,5 +14,4 @@ public record AddOrderRequest
 
     public required int Period { get; set; }
 
-    public required Guid HotelId { get; set; }
 }

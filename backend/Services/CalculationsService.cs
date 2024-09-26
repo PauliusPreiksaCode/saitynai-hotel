@@ -1,4 +1,5 @@
-﻿using backend.Enums;
+﻿using backend.Entities;
+using backend.Enums;
 using backend.Interfaces;
 using backend.RequestDtos.Price;
 
@@ -6,10 +7,9 @@ namespace backend.Services;
 
 public class CalculationsService : ICalculationsService
 {
-    public decimal CalculatePrice(int peopleCount, int period, bool breakfast, RoomType roomType)
+    public decimal CalculatePrice(int peopleCount, int period, bool breakfast, RoomType roomType, Hotel hotel)
     {
         const decimal cleaningFee = 20;
-        const decimal breakfastPrice = 15;
 
         if (period < 0 || peopleCount < 0)
         {
@@ -20,15 +20,15 @@ public class CalculationsService : ICalculationsService
 
         totalCost += roomType switch
         {
-            RoomType.Suite => 200 * period,
-            RoomType.Deluxe => 150 * period,
-            RoomType.Standard => 100 * period,
+            RoomType.Suite => hotel.SuitePrice * period,
+            RoomType.Deluxe => hotel.DeluxePrice * period,
+            RoomType.Standard => hotel.StandardPrice * period,
             _ => throw new ArgumentOutOfRangeException(nameof(roomType), roomType, "Invalid room type")
         };
 
         if (breakfast)
         {
-            totalCost += breakfastPrice * peopleCount * period;
+            totalCost += hotel.BreakfastPrice * peopleCount * period;
         }
     
         totalCost += cleaningFee;
@@ -36,8 +36,8 @@ public class CalculationsService : ICalculationsService
         return totalCost;
     }
 
-    public decimal CalculatePrice(GetPriceRequest request)
+    public decimal CalculatePrice(GetPriceRequest request, Hotel hotel)
     {
-        return CalculatePrice(request.PeopleCount, request.Period, request.Breakfast, request.RoomType);
+        return CalculatePrice(request.PeopleCount, request.Period, request.Breakfast, request.RoomType, hotel);
     }
 }
