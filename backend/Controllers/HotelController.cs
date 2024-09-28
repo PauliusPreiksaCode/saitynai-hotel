@@ -92,7 +92,6 @@ public class HotelController : ControllerBase
     }
 
     
-    // TODO: relation check response
     [HttpDelete]
     [Route("{id:guid}")]
     public async Task<IActionResult> DeleteHotel([FromRoute] Guid id)

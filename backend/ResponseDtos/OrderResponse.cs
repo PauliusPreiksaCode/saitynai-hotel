@@ -3,7 +3,7 @@ using backend.Enums;
 
 namespace backend.ResponseDtos;
 
-public class OrderResponse
+public record OrderResponse
 {
     public Guid Id { get; set; }
 

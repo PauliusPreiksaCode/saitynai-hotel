@@ -32,6 +32,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddTransient<IHotelService, HotelService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
+builder.Services.AddTransient<ICommentService, CommentService>();
 builder.Services.AddTransient<ICalculationsService, CalculationsService>();
 
 builder.Services.AddCors(options =>

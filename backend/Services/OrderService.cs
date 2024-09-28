@@ -88,7 +88,7 @@ public class OrderService : IOrderService
 
     public async Task<OrderResponse> UpdateOrder(Guid hotelId, Guid id, EditOrderRequest request)
     {
-        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(hotelId));
+        var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(hotelId));
 
         if (hotel is null)
         {
@@ -121,10 +121,9 @@ public class OrderService : IOrderService
         return order.ToDto();
     }
 
-    // TODO: relation check response
     public async Task DeleteOrder(Guid hotelId, Guid id)
     {
-        var hotel = _context.Hotel.FirstOrDefault(x => x.Id.Equals(hotelId));
+        var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(hotelId));
 
         if (hotel is null)
         {
@@ -139,6 +138,15 @@ public class OrderService : IOrderService
         if (order is null)
         {
             throw new Exception("Order not found");
+        }
+
+        var hasComments = await _context.Comment
+            .Include(c => c.Order)
+            .AnyAsync(c => c.Order.Id.Equals(id));
+
+        if (hasComments)
+        {
+            throw new Exception("Order has comments");
         }
 
         _context.Order.Remove(order);

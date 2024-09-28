@@ -1,6 +1,6 @@
 ﻿namespace backend.ResponseDtos;
 
-public class HotelResponse
+public record HotelResponse
 {
     public Guid Id { get; set; }
     public required string Name { get; set; }

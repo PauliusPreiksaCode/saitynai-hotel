@@ -9,12 +9,10 @@ namespace backend.Controllers;
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
-    private readonly ICalculationsService _calculationsService;
 
-    public OrderController(IOrderService orderService, ICalculationsService calculationsService)
+    public OrderController(IOrderService orderService)
     {
         _orderService = orderService;
-        _calculationsService = calculationsService;
     }
 
     [HttpGet]
@@ -44,7 +42,7 @@ public class OrderController : ControllerBase
         {
             return e.Message switch
             {
-                "Hotel not found" => NotFound("Order not found"),
+                "Hotel not found" => NotFound("Hotel not found"),
                 "Order not found" => NotFound("Order not found")
             };
         }
@@ -101,7 +99,7 @@ public class OrderController : ControllerBase
             {
                 "Order not found" => NotFound("Order not found"),
                 "Hotel not found" => NotFound("Hotel not found"),
-                _ => StatusCode(500, "Error occured while updating order")
+                _ => StatusCode(400, "Wrong JSON format")
             };
         }
     }
@@ -120,7 +118,8 @@ public class OrderController : ControllerBase
             return e.Message switch
             {
                 "Hotel not found" => NotFound("Hotel not found"),
-                "Order not found" => NotFound("Order not found")
+                "Order not found" => NotFound("Order not found"),
+                "Order has comments" => NotFound("Order has comments")
             };
         }
     }
