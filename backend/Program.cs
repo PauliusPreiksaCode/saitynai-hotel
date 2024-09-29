@@ -1,5 +1,6 @@
 using backend;
 using backend.Interfaces;
+using backend.Middleware;
 using backend.Services;
 using backend.Validation.Hotel;
 using FluentValidation.AspNetCore;
@@ -49,8 +50,10 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
+app.UseMiddleware<GlobalRoutePrefixMiddleware>("/api/v1");
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UsePathBase(new PathString("/api/v1"));
 app.UseRouting();
 app.UseStaticFiles();
 
