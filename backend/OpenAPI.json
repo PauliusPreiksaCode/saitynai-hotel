@@ -987,7 +987,7 @@
                 "$ref": "#/components/schemas/AddOrderRequest"
               },
               "example": {
-                "roomType": "Deluxe",
+                "roomType": 1,
                 "breakfast": true,
                 "orderDate": "2024-09-29T12:00:00Z",
                 "peopleCount": 2,
