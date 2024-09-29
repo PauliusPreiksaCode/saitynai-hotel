@@ -71,7 +71,7 @@ public class CommentService : ICommentService
         await CheckForHotelOrder(hotelId, orderId);
 
         var comment = await _context.Comment
-            .Include(c => c.Order.Id.Equals(orderId))
+            .Include(c => c.Order)
             .Where(c => c.Order.Id.Equals(orderId))
             .FirstOrDefaultAsync(c => c.Id.Equals(id));
         
@@ -94,7 +94,9 @@ public class CommentService : ICommentService
 
         var comment = await _context.Comment
             .Include(c => c.Order)
-            .FirstOrDefaultAsync(c => c.Order.Id.Equals(orderId));
+            .Where(c => c.Order.Id.Equals(orderId))
+            .FirstOrDefaultAsync(c => c.Id.Equals(id) );
+        
         
         if (comment is null)
         {
