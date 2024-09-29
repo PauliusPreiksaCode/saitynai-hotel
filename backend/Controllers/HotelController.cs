@@ -46,7 +46,8 @@ public class HotelController : ControllerBase
                 .Select(e => e.ErrorMessage)
                 .ToList();
 
-            return StatusCode(422, new { errors });
+            var wrongJson = errors.Any(e => e.Contains("JSON"));
+            return wrongJson ? StatusCode(400, "Wrong JSON format") : StatusCode(422, new { errors });
         }
 
         try
@@ -73,7 +74,8 @@ public class HotelController : ControllerBase
                 .Select(e => e.ErrorMessage)
                 .ToList();
 
-            return StatusCode(422, new { errors });
+            var wrongJson = errors.Any(e => e.Contains("JSON"));
+            return wrongJson ? StatusCode(400, "Wrong JSON format") : StatusCode(422, new { errors });
         }
         
         try
