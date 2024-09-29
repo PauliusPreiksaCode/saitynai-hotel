@@ -1,0 +1,1720 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Hotel API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5132/api/v1"
+    }
+  ],
+  "paths": {
+    "/hotels/{hotelId}/orders/{orderId}/comments": {
+      "get": {
+        "summary": "Retrieve all comments for a specific order",
+        "description": "Fetches a list of all comments for a given order in a specific hotel.",
+        "tags": [
+          "Comment"
+        ],
+        "operationId": "getAllComments",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the order",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of comments for the specified order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentResponse"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "7f1a7d21-7b3b-4f2a-b60d-5b2f9d9235a5",
+                    "text": "Great service!",
+                    "order": {
+                      "id": "b22f1b39-5f2b-4327-bc59-e2c2b445937d",
+                      "roomType": "Deluxe",
+                      "breakfast": true,
+                      "peopleCount": 2
+                    },
+                    "modifiedAt": "2024-09-01T14:48:00Z"
+                  },
+                  {
+                    "id": "10d2d37f-1df1-4a1a-bc1c-5a9d124b9e3a",
+                    "text": "Room was a bit small.",
+                    "order": {
+                      "id": "b22f1b39-5f2b-4327-bc59-e2c2b445937d",
+                      "roomType": "Deluxe",
+                      "breakfast": true,
+                      "peopleCount": 2
+                    },
+                    "modifiedAt": "2024-09-02T10:35:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel or order not found, or the order does not belong to this hotel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "HotelNotFound": {
+                    "summary": "Hotel not found",
+                    "value": {
+                      "message": "Hotel not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFound": {
+                    "summary": "Order not found",
+                    "value": {
+                      "message": "Order not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFoundForHotel": {
+                    "summary": "Order not found for this hotel",
+                    "value": {
+                      "message": "Order not found for this hotel",
+                      "errorCode": 404
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a new comment to an order",
+        "description": "Creates a new comment for a specified order in a specific hotel.",
+        "tags": [
+          "Comment"
+        ],
+        "operationId": "addComment",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the order",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error when the request body is not valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel or order not found, or the order does not belong to this hotel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "HotelNotFound": {
+                    "summary": "Hotel not found",
+                    "value": {
+                      "message": "Hotel not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFound": {
+                    "summary": "Order not found",
+                    "value": {
+                      "message": "Order not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFoundForHotel": {
+                    "summary": "Order not found for this hotel",
+                    "value": {
+                      "message": "Order not found for this hotel",
+                      "errorCode": 404
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wrong JSON format or other generic error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hotels/{hotelId}/orders/{orderId}/comments/{id}": {
+      "get": {
+        "summary": "Retrieve a specific comment for an order",
+        "description": "Fetches a single comment by its ID for a given order in a specific hotel.",
+        "tags": [
+          "Comment"
+        ],
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the order",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the comment",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested comment for the specified order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponse"
+                },
+                "example": {
+                  "id": "123e4567-e89b-12d3-a456-426614174000",
+                  "text": "Amazing stay, friendly staff!",
+                  "order": {
+                    "id": "c2a1d5e6-bf67-497d-bb47-55d9e1e95c2d",
+                    "roomType": "Suite",
+                    "breakfast": true,
+                    "peopleCount": 3
+                  },
+                  "modifiedAt": "2024-09-10T12:00:00Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel, order, or comment not found, or the order does not belong to this hotel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "HotelNotFound": {
+                    "summary": "Hotel not found",
+                    "value": {
+                      "message": "Hotel not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFound": {
+                    "summary": "Order not found",
+                    "value": {
+                      "message": "Order not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "CommentNotFound": {
+                    "summary": "Comment not found",
+                    "value": {
+                      "message": "Comment not found",
+                      "errorCode": 404
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing comment",
+        "description": "Updates the content of an existing comment for a specified order in a specific hotel.",
+        "tags": [
+          "Comment"
+        ],
+        "operationId": "updateComment",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the order",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the comment",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditCommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error when the request body is not valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel, order, or comment not found, or the order does not belong to this hotel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "HotelNotFound": {
+                    "summary": "Hotel not found",
+                    "value": {
+                      "message": "Hotel not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFound": {
+                    "summary": "Order not found",
+                    "value": {
+                      "message": "Order not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFoundForHotel": {
+                    "summary": "Order not found for this hotel",
+                    "value": {
+                      "message": "Order not found for this hotel",
+                      "errorCode": 404
+                    }
+                  },
+                  "CommentNotFound": {
+                    "summary": "Comment not found",
+                    "value": {
+                      "message": "Comment not found",
+                      "errorCode": 404
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wrong JSON format or other generic error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific comment for an order",
+        "description": "Removes a comment by its ID for a given order in a specific hotel.",
+        "tags": [
+          "Comment"
+        ],
+        "operationId": "deleteComment",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the order",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the comment",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Comment successfully deleted"
+          },
+          "404": {
+            "description": "Hotel, order, or comment not found, or the order does not belong to this hotel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "HotelNotFound": {
+                    "summary": "Hotel not found",
+                    "value": {
+                      "message": "Hotel not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFound": {
+                    "summary": "Order not found",
+                    "value": {
+                      "message": "Order not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFoundForHotel": {
+                    "summary": "Order not found for this hotel",
+                    "value": {
+                      "message": "Order not found for this hotel",
+                      "errorCode": 404
+                    }
+                  },
+                  "CommentNotFound": {
+                    "summary": "Comment not found",
+                    "value": {
+                      "message": "Comment not found",
+                      "errorCode": 404
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hotels": {
+      "get": {
+        "summary": "Get all hotels",
+        "description": "Retrieves a list of all available hotels with details like name, location, prices, and photo.",
+        "tags": [
+          "Hotel"
+        ],
+        "operationId": "getAllHotels",
+        "responses": {
+          "200": {
+            "description": "A list of hotels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HotelResponse"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "e5db7d93-5b24-4d69-96d9-5cbd54b3b9cb",
+                    "name": "Grand Plaza Hotel",
+                    "location": "New York City",
+                    "photo": "https://example.com/hotels/grand-plaza.jpg",
+                    "breakfastPrice": 20,
+                    "standardPrice": 150,
+                    "deluxePrice": 200,
+                    "suitePrice": 300
+                  },
+                  {
+                    "id": "c9e1b1ad-5c4e-4a43-9f62-09b8fd4dafe3",
+                    "name": "Seaside Resort",
+                    "location": "Malibu",
+                    "photo": "https://example.com/hotels/seaside-resort.jpg",
+                    "breakfastPrice": 25,
+                    "standardPrice": 180,
+                    "deluxePrice": 250,
+                    "suitePrice": 350
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+
+      "post": {
+        "summary": "Add a new hotel",
+        "description": "Creates a new hotel entry in the system.",
+        "tags": [
+          "Hotel"
+        ],
+        "operationId": "addHotel",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddHotelRequest"
+              },
+              "example": {
+                "name": "Sunset Beach Resort",
+                "location": "Miami",
+                "photo": "https://example.com/hotels/sunset-beach.jpg",
+                "breakfastPrice": 25,
+                "standardPrice": 150,
+                "deluxePrice": 220,
+                "suitePrice": 350
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Hotel created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HotelResponse"
+                },
+                "example": {
+                  "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                  "name": "Sunset Beach Resort",
+                  "location": "Miami",
+                  "photo": "https://example.com/hotels/sunset-beach.jpg",
+                  "breakfastPrice": 25,
+                  "standardPrice": 150,
+                  "deluxePrice": 220,
+                  "suitePrice": 350
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URI of the newly created hotel",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request due to incorrect JSON format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Wrong JSON format",
+                  "errorCode": 400
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - Validation errors in the request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "errors": [
+                    "The Name field is required.",
+                    "The Location field is required."
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hotels/{id}": {
+      "get": {
+        "summary": "Get hotel by ID",
+        "description": "Retrieves a single hotel by its unique identifier (ID).",
+        "tags": [
+          "Hotel"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hotel details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HotelResponse"
+                },
+                "example": {
+                  "id": "e5db7d93-5b24-4d69-96d9-5cbd54b3b9cb",
+                  "name": "Grand Plaza Hotel",
+                  "location": "New York City",
+                  "photo": "https://example.com/hotels/grand-plaza.jpg",
+                  "breakfastPrice": 20,
+                  "standardPrice": 150,
+                  "deluxePrice": 200,
+                  "suitePrice": 300
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Hotel not found",
+                  "errorCode": 404
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a hotel",
+        "description": "Updates the details of an existing hotel identified by its unique ID.",
+        "tags": [
+          "Hotel"
+        ],
+        "operationId": "updateHotel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel to update",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditHotelRequest"
+              },
+              "example": {
+                "name": "Updated Beach Resort",
+                "location": "Miami",
+                "photo": "https://example.com/hotels/updated-beach.jpg",
+                "breakfastPrice": 30,
+                "standardPrice": 180,
+                "deluxePrice": 250,
+                "suitePrice": 380
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hotel updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HotelResponse"
+                },
+                "example": {
+                  "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                  "name": "Updated Beach Resort",
+                  "location": "Miami",
+                  "photo": "https://example.com/hotels/updated-beach.jpg",
+                  "breakfastPrice": 30,
+                  "standardPrice": 180,
+                  "deluxePrice": 250,
+                  "suitePrice": 380
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Hotel not found",
+                  "errorCode": 404
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request due to incorrect JSON format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Wrong JSON format",
+                  "errorCode": 400
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - Validation errors in the request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "errors": [
+                    "The Name field is required.",
+                    "The Location field is required."
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a hotel",
+        "description": "Deletes a hotel by its unique ID. A hotel cannot be deleted if it is currently booked.",
+        "tags": [
+          "Hotel"
+        ],
+        "operationId": "deleteHotel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel to delete",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Hotel deleted successfully, no content"
+          },
+          "404": {
+            "description": "Hotel not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Hotel not found",
+                  "errorCode": 404
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - The hotel cannot be deleted because it is booked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Hotel cannot be deleted",
+                  "errorCode": 409
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hotels/{hotelId}/orders": {
+      "get": {
+        "summary": "Get all orders for a specific hotel",
+        "description": "Fetches all orders for the specified hotel by hotel ID.",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "getAllOrders",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel to retrieve orders for",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of orders for the specified hotel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderResponse"
+                  },
+                  "example": [
+                    {
+                      "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                      "roomType": "Deluxe",
+                      "breakfast": true,
+                      "orderDate": "2024-09-29T12:34:56",
+                      "peopleCount": 2,
+                      "period": 3,
+                      "price": 300.00,
+                      "hotel": {
+                        "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                        "name": "Beach Resort",
+                        "location": "Miami",
+                        "photo": "https://example.com/hotels/beach.jpg",
+                        "breakfastPrice": 30,
+                        "standardPrice": 180,
+                        "deluxePrice": 250,
+                        "suitePrice": 380
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Hotel not found",
+                  "errorCode": 404
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new order for a specific hotel",
+        "description": "Adds a new order to the specified hotel using the hotel's unique ID.",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "addOrder",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddOrderRequest"
+              },
+              "example": {
+                "roomType": "Deluxe",
+                "breakfast": true,
+                "orderDate": "2024-09-29T12:00:00Z",
+                "peopleCount": 2,
+                "period": 3
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                },
+                "example": {
+                  "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                  "roomType": "Deluxe",
+                  "breakfast": true,
+                  "orderDate": "2024-09-29T12:00:00Z",
+                  "peopleCount": 2,
+                  "period": 3,
+                  "price": 450.00,
+                  "hotel": {
+                    "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                    "name": "Beach Resort",
+                    "location": "Miami",
+                    "photo": "https://example.com/hotels/beach.jpg",
+                    "breakfastPrice": 30,
+                    "standardPrice": 180,
+                    "deluxePrice": 250,
+                    "suitePrice": 380
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Hotel not found",
+                  "errorCode": 404
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, wrong JSON format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Wrong JSON format",
+                  "errorCode": 400
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity, validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "example": {
+                  "errors": [
+                    "OrderDate is required",
+                    "PeopleCount must be greater than 0"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hotels/{hotelId}/orders/{id}": {
+      "get": {
+        "summary": "Get order by ID for a specific hotel",
+        "description": "Fetches a specific order for a given hotel using the hotel's unique ID and the order's unique ID.",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "getOrderById",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the order",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order details for the specified hotel and order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                },
+                "example": {
+                  "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                  "roomType": "Deluxe",
+                  "breakfast": true,
+                  "orderDate": "2024-09-29T12:34:56",
+                  "peopleCount": 2,
+                  "period": 3,
+                  "price": 300.00,
+                  "hotel": {
+                    "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                    "name": "Beach Resort",
+                    "location": "Miami",
+                    "photo": "https://example.com/hotels/beach.jpg",
+                    "breakfastPrice": 30,
+                    "standardPrice": 180,
+                    "deluxePrice": 250,
+                    "suitePrice": 380
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Either the hotel or the order was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "hotelNotFound": {
+                    "value": {
+                      "message": "Hotel not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "orderNotFound": {
+                    "value": {
+                      "message": "Order not found",
+                      "errorCode": 404
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing order for a specific hotel",
+        "description": "Updates an existing order using the hotel's unique ID and the order's unique ID.",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "updateOrder",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the order",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditOrderRequest"
+              },
+              "example": {
+                "roomType": "Suite",
+                "breakfast": true,
+                "orderDate": "2024-10-01T12:00:00Z",
+                "peopleCount": 2,
+                "period": 5
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                },
+                "example": {
+                  "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                  "roomType": "Suite",
+                  "breakfast": true,
+                  "orderDate": "2024-10-01T12:00:00Z",
+                  "peopleCount": 2,
+                  "period": 5,
+                  "price": 1200.00,
+                  "hotel": {
+                    "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                    "name": "Beach Resort",
+                    "location": "Miami",
+                    "photo": "https://example.com/hotels/beach.jpg",
+                    "breakfastPrice": 30,
+                    "standardPrice": 180,
+                    "deluxePrice": 250,
+                    "suitePrice": 380
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel or order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "HotelNotFound": {
+                    "summary": "Hotel not found",
+                    "value": {
+                      "message": "Hotel not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFound": {
+                    "summary": "Order not found",
+                    "value": {
+                      "message": "Order not found",
+                      "errorCode": 404
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, wrong JSON format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Wrong JSON format",
+                  "errorCode": 400
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity, validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "example": {
+                  "errors": [
+                    "OrderDate is required",
+                    "PeopleCount must be greater than 0"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an existing order for a specific hotel",
+        "description": "Deletes an existing order by using the hotel's unique ID and the order's unique ID.",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "deleteOrder",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the order",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content, the order was successfully deleted."
+          },
+          "404": {
+            "description": "Hotel or order not found, or order has comments and cannot be deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "HotelNotFound": {
+                    "summary": "Hotel not found",
+                    "value": {
+                      "message": "Hotel not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderNotFound": {
+                    "summary": "Order not found",
+                    "value": {
+                      "message": "Order not found",
+                      "errorCode": 404
+                    }
+                  },
+                  "OrderHasComments": {
+                    "summary": "Order has comments",
+                    "value": {
+                      "message": "Order has comments",
+                      "errorCode": 404
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddCommentRequest": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Text of the comment"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddHotelRequest": {
+        "required": [
+          "breakfastPrice",
+          "deluxePrice",
+          "location",
+          "name",
+          "photo",
+          "standardPrice",
+          "suitePrice"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Name of the hotel"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true,
+            "description": "Location of the hotel"
+          },
+          "photo": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL of the hotel photo"
+          },
+          "breakfastPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Price for breakfast"
+          },
+          "standardPrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Price for a standard room"
+          },
+          "deluxePrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Price for a deluxe room"
+          },
+          "suitePrice": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Price for a suite"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddOrderRequest": {
+        "required": [
+          "breakfast",
+          "orderDate",
+          "peopleCount",
+          "period",
+          "roomType"
+        ],
+        "type": "object",
+        "properties": {
+          "roomType": {
+            "$ref": "#/components/schemas/RoomType"
+          },
+          "breakfast": {
+            "type": "boolean",
+            "description": "Indicates if breakfast is included in the order"
+          },
+          "orderDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when the order was placed"
+          },
+          "peopleCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of people for the booking"
+          },
+          "period": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The number of days the room is booked for"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EditCommentRequest": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Updated text of the comment"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HotelResponse": {
+        "required": [
+          "id",
+          "name",
+          "location",
+          "photo",
+          "standardPrice"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the hotel"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the hotel"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location of the hotel"
+          },
+          "photo": {
+            "type": "string",
+            "description": "URL of the hotel photo"
+          },
+          "breakfastPrice": {
+            "type": "integer",
+            "description": "Price for breakfast"
+          },
+          "standardPrice": {
+            "type": "integer",
+            "description": "Price for a standard room"
+          },
+          "deluxePrice": {
+            "type": "integer",
+            "description": "Price for a deluxe room"
+          },
+          "suitePrice": {
+            "type": "integer",
+            "description": "Price for a suite"
+          }
+        }
+      },
+      "EditHotelRequest": {
+        "required": [
+          "breakfastPrice",
+          "deluxePrice",
+          "location",
+          "name",
+          "photo",
+          "standardPrice",
+          "suitePrice"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Updated name of the hotel",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "description": "Updated location of the hotel",
+            "nullable": true
+          },
+          "photo": {
+            "type": "string",
+            "description": "Updated URL of the hotel photo",
+            "nullable": true
+          },
+          "breakfastPrice": {
+            "type": "integer",
+            "description": "Updated price for breakfast",
+            "format": "int32"
+          },
+          "standardPrice": {
+            "type": "integer",
+            "description": "Updated price for a standard room",
+            "format": "int32"
+          },
+          "deluxePrice": {
+            "type": "integer",
+            "description": "Updated price for a deluxe room",
+            "format": "int32"
+          },
+          "suitePrice": {
+            "type": "integer",
+            "description": "Updated price for a suite",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderResponse": {
+        "required": [
+          "id",
+          "roomType",
+          "breakfast",
+          "orderDate",
+          "peopleCount",
+          "period",
+          "price",
+          "hotel"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the order"
+          },
+          "roomType": {
+            "type": "string",
+            "enum": ["Standard", "Deluxe", "Suite"],
+            "description": "The type of room booked"
+          },
+          "breakfast": {
+            "type": "boolean",
+            "description": "Indicates if breakfast is included in the order"
+          },
+          "orderDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when the order was placed"
+          },
+          "peopleCount": {
+            "type": "integer",
+            "description": "Number of people for the booking"
+          },
+          "period": {
+            "type": "integer",
+            "description": "The number of days the room is booked for"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Total price of the booking"
+          },
+          "hotel": {
+            "$ref": "#/components/schemas/HotelResponse"
+          }
+        }
+      },"CommentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the comment"
+          },
+          "text": {
+            "type": "string",
+            "description": "Content of the comment"
+          },
+          "order": {
+            "$ref": "#/components/schemas/OrderResponse",
+            "description": "The order that this comment belongs to"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the comment was last modified"
+          }
+        }
+      },
+      "EditOrderRequest": {
+        "required": [
+          "breakfast",
+          "orderDate",
+          "peopleCount",
+          "period",
+          "roomType"
+        ],
+        "type": "object",
+        "properties": {
+          "roomType": {
+            "$ref": "#/components/schemas/RoomType"
+          },
+          "breakfast": {
+            "type": "boolean",
+            "description": "Indicates if breakfast is included in the order"
+          },
+          "orderDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when the order was placed"
+          },
+          "peopleCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of people for the booking"
+          },
+          "period": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The number of days the room is booked for"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoomType": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32",
+        "description": "The type of room to be booked"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "errorCode": {
+            "type": "integer",
+            "description": "Application-specific error code"
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of validation errors"
+          }
+        }
+      }
+    }
+  }
+}
