@@ -46,7 +46,7 @@ public class CommentService : ICommentService
         return comment.ToDto();
     }
 
-    public async Task<CommentResponse> AddComment(Guid hotelId, Guid orderId, AddCommentRequest request)
+    public async Task<CommentResponse> AddComment(Guid hotelId, Guid orderId, AddCommentRequest request, string userId)
     {
         await CheckForHotelOrder(hotelId, orderId);
         
@@ -57,7 +57,8 @@ public class CommentService : ICommentService
             Text = request.Text,
             CreatedAt = DateTime.Now,
             ModifiedAt = DateTime.Now,
-            Order = order!
+            Order = order!,
+            UserId = userId
         };
 
         await _context.Comment.AddAsync(comment);
@@ -106,6 +107,17 @@ public class CommentService : ICommentService
         _context.Comment.Remove(comment);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<string> GetUserIdByComment(Guid commentId)
+    {
+        var comment = await _context.Comment.FirstOrDefaultAsync(x => x.Id.Equals(commentId));
+        
+        if(comment is null)
+            throw new Exception("Comment not found");
+        
+        return comment.UserId;
+    }
+
 
     private async Task CheckForHotelOrder(Guid hotelId, Guid orderId)
     {

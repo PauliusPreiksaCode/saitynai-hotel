@@ -33,7 +33,7 @@ public class HotelService : IHotelService
         return hotel.ToDto();
     }
 
-    public async Task<HotelResponse> AddHotel(AddHotelRequest request)
+    public async Task<HotelResponse> AddHotel(AddHotelRequest request, string userId)
     {
         var hotel = new Hotel
         {
@@ -43,7 +43,8 @@ public class HotelService : IHotelService
             BreakfastPrice = request.BreakfastPrice,
             StandardPrice = request.StandardPrice,
             DeluxePrice = request.DeluxePrice,
-            SuitePrice = request.SuitePrice
+            SuitePrice = request.SuitePrice,
+            HotelAdminId = userId
         };
 
         await _context.Hotel.AddAsync(hotel);
@@ -94,5 +95,16 @@ public class HotelService : IHotelService
 
         _context.Hotel.Remove(hotel);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<string> GetUserIdByHotel(Guid HotelId)
+    {
+        var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(HotelId));
+        
+        if(hotel is null)
+            throw new Exception("Hotel not found");
+        
+        return hotel.HotelAdminId;
+
     }
 }

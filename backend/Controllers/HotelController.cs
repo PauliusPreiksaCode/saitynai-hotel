@@ -1,6 +1,10 @@
-﻿using System.Text.Json;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text.Json;
+using backend.Auth.Model;
 using backend.Interfaces;
 using backend.RequestDtos.Hotel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -9,10 +13,12 @@ namespace backend.Controllers;
 public class HotelController : ControllerBase
 {
     private readonly IHotelService _hotelService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public HotelController(IHotelService hotelService)
+    public HotelController(IHotelService hotelService, IHttpContextAccessor httpContextAccessor)
     {
         _hotelService = hotelService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpGet]
@@ -38,6 +44,7 @@ public class HotelController : ControllerBase
     }
     
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> AddHotel([FromBody] AddHotelRequest request)
     {
         if (!ModelState.IsValid)
@@ -52,7 +59,13 @@ public class HotelController : ControllerBase
 
         try
         {
-            var hotel = await _hotelService.AddHotel(request);
+            if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && !_httpContextAccessor.HttpContext.User.IsInRole(Roles.HotelPersonnel))
+            {
+                return Forbid();
+            }
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var hotel = await _hotelService.AddHotel(request, userId);
             return CreatedAtAction(nameof(AddHotel), new { id = hotel.Id }, hotel);
         }
         catch (Exception e)
@@ -65,6 +78,7 @@ public class HotelController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize]
     [Route("{id:guid}")]
     public async Task<IActionResult> UpdateHotel([FromRoute] Guid id, [FromBody] EditHotelRequest request)
     {
@@ -80,6 +94,11 @@ public class HotelController : ControllerBase
         
         try
         {
+            if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _hotelService.GetUserIdByHotel(id))
+            {
+                return Forbid();
+            }
+            
             var hotel = await _hotelService.UpdateHotel(id, request);
             return Ok(hotel);
         }
@@ -95,11 +114,17 @@ public class HotelController : ControllerBase
 
     
     [HttpDelete]
+    [Authorize]
     [Route("{id:guid}")]
     public async Task<IActionResult> DeleteHotel([FromRoute] Guid id)
     {
         try
         {
+            if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _hotelService.GetUserIdByHotel(id))
+            {
+                return Forbid();
+            }
+            
             await _hotelService.DeleteHotel(id);
             return NoContent();
         }

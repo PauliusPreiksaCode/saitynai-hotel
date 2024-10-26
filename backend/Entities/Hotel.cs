@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using backend.Auth.Model;
 using backend.ResponseDtos;
 
 namespace backend.Entities;
@@ -16,6 +17,11 @@ public class Hotel
     public int StandardPrice { get; set; } = 0;
     public int DeluxePrice { get; set; } = 0;
     public int SuitePrice { get; set; } = 0;
+    
+    [Required]
+    public required string HotelAdminId { get; set; }
+    [ForeignKey("HotelAdminId")]
+    public User HotelAdmin { get; set; }
 
     public HotelResponse ToDto()
     {

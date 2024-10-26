@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using backend.Auth.Model;
 using backend.ResponseDtos;
 
 namespace backend.Entities;
@@ -13,6 +14,11 @@ public class Comment
     public required Order Order { get; set; }
     public required DateTime CreatedAt { get; set; }
     public required DateTime ModifiedAt { get; set; }
+    
+    [Required]
+    public required string UserId { get; set; }
+    [ForeignKey("UserId")]
+    public User User { get; set; }
 
     public CommentResponse ToDto()
     {

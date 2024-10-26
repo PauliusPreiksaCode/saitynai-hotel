@@ -1,6 +1,10 @@
-﻿using backend.Interfaces;
+﻿using System.Security.Claims;
+using backend.Auth.Model;
+using backend.Interfaces;
 using backend.RequestDtos.Comment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace backend.Controllers;
 
@@ -8,17 +12,31 @@ namespace backend.Controllers;
 public class CommentController : ControllerBase
 {
     private readonly ICommentService _commentService;
+    private readonly IHotelService _hotelService;
+    private readonly IOrderService _orderService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CommentController(ICommentService commentService)
+    public CommentController(ICommentService commentService, IHotelService hotelService, IOrderService orderService, IHttpContextAccessor httpContextAccessor)
     {
         _commentService = commentService;
+        _hotelService = hotelService;
+        _orderService = orderService;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAllComments([FromRoute] Guid hotelId, [FromRoute] Guid orderId)
     {
         try
         {
+            if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && 
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _hotelService.GetUserIdByHotel(hotelId) &&
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await  _orderService.GetUserIdByOrder(orderId))
+            {
+                return Forbid();
+            }
+            
             var comments = await _commentService.GetAllComments(hotelId, orderId);
             return Ok(comments);
         }
@@ -32,14 +50,22 @@ public class CommentController : ControllerBase
             };
         }
     }
-
+    
     [HttpGet]
+    [Authorize]
     [Route("{id:guid}")]
     public async Task<IActionResult> GetCommentById([FromRoute] Guid hotelId, [FromRoute] Guid orderId,
         [FromRoute] Guid id)
     {
         try
         {
+            if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && 
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _hotelService.GetUserIdByHotel(hotelId) &&
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _commentService.GetUserIdByComment(id))
+            {
+                return Forbid();
+            }
+            
             var comment = await _commentService.GetCommentById(hotelId,  orderId, id);
             return Ok(comment);
         }
@@ -56,6 +82,7 @@ public class CommentController : ControllerBase
     }
     
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> AddComment([FromRoute] Guid hotelId, [FromRoute] Guid orderId, 
         [FromBody] AddCommentRequest request)
     {
@@ -71,7 +98,15 @@ public class CommentController : ControllerBase
         
         try
         {
-            var comment = await _commentService.AddComment(hotelId, orderId, request);
+            if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && 
+                !_httpContextAccessor.HttpContext.User.IsInRole(Roles.Client) && 
+                !_httpContextAccessor.HttpContext.User.IsInRole(Roles.HotelPersonnel))
+            {
+                return Forbid();
+            }
+            
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var comment = await _commentService.AddComment(hotelId, orderId, request, userId);
             return CreatedAtAction(nameof(AddComment), new { id = comment.Id }, comment);
         }
         catch (Exception e)
@@ -87,6 +122,7 @@ public class CommentController : ControllerBase
     }
     
     [HttpPut]
+    [Authorize]
     [Route("{id:guid}")]
     public async Task<IActionResult> UpdateComment([FromRoute] Guid hotelId, [FromRoute] Guid orderId, [FromRoute] Guid id, 
         [FromBody] EditCommentRequest request)
@@ -103,6 +139,12 @@ public class CommentController : ControllerBase
         
         try
         {
+            if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && 
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _commentService.GetUserIdByComment(id))
+            {
+                return Forbid();
+            }
+            
             var comment = await _commentService.UpdateComment(hotelId, orderId, id, request);
             return Ok(comment);
         }
@@ -120,11 +162,18 @@ public class CommentController : ControllerBase
     }
     
     [HttpDelete]
+    [Authorize]
     [Route("{id:guid}")]
     public async Task<IActionResult> DeleteComment([FromRoute] Guid hotelId, [FromRoute] Guid orderId, [FromRoute] Guid id)
     {
         try
         {
+            if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && 
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _commentService.GetUserIdByComment(id))
+            {
+                return Forbid();
+            }
+            
             await _commentService.DeleteComment(hotelId, orderId, id);
             return NoContent();
         }

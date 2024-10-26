@@ -57,7 +57,7 @@ public class OrderService : IOrderService
         return order.ToDto();
     }
 
-    public async Task<OrderResponse> AddOrder(Guid hotelId, AddOrderRequest request)
+    public async Task<OrderResponse> AddOrder(Guid hotelId, AddOrderRequest request, string userId)
     {
         var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(hotelId));
 
@@ -77,7 +77,8 @@ public class OrderService : IOrderService
             PeopleCount = request.PeopleCount,
             Period = request.Period,
             Price = price,
-            Hotel = hotel
+            Hotel = hotel,
+            UserId = userId
         };
 
         await _context.AddAsync(order);
@@ -151,5 +152,35 @@ public class OrderService : IOrderService
 
         _context.Order.Remove(order);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<string> GetUserIdByOrder(Guid orderId)
+    {
+        var order = await _context.Order.FirstOrDefaultAsync(x => x.Id.Equals(orderId));
+        
+        if(order is null)
+            throw new Exception("Order not found");
+        
+        return order.UserId;
+    }
+
+    public async Task<List<OrderResponse>> UserOrders(Guid hotelId, string userId)
+    {
+        var hotel = await _context.Hotel.FirstOrDefaultAsync(x => x.Id.Equals(hotelId));
+        
+        if (hotel is null)
+        {
+            throw new Exception("Hotel not found");
+        }
+
+        var orders = await _context.Order
+            .Include(x => x.Hotel)
+            .Where(o => o.Hotel.Id.Equals(hotelId))
+            .ToListAsync();
+
+        var userOrders = orders.Where(x => x.UserId.Equals(userId)).ToList();
+
+        return userOrders.Select(o => o.ToDto())
+            .ToList();
     }
 }
