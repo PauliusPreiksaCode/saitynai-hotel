@@ -21,7 +21,7 @@ var configuration = new ConfigurationBuilder()
 
 builder.Services.AddDbContext<SystemContext>(options =>
 {
-    options.UseSqlServer(configuration.GetConnectionString("SqlServerConnection"));
+    options.UseSqlServer(builder.Configuration["SqlServer:ConnectionString"]);
 });
 
 builder.Services.AddEndpointsApiExplorer();
