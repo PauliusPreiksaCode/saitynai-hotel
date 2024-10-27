@@ -104,9 +104,9 @@ app.UseEndpoints(endpoints =>
     endpoints.MapRazorPages();
 });
 
-using var scope = app.Services.CreateScope();
-var dbContext = scope.ServiceProvider.GetRequiredService<SystemContext>();
-var dbSeeder = scope.ServiceProvider.GetRequiredService<AuthSeeder>();
-await dbSeeder.SeedAsync();
+// using var scope = app.Services.CreateScope();
+// var dbContext = scope.ServiceProvider.GetRequiredService<SystemContext>();
+// var dbSeeder = scope.ServiceProvider.GetRequiredService<AuthSeeder>();
+// await dbSeeder.SeedAsync();
 
 app.Run();
