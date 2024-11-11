@@ -143,7 +143,7 @@ public class AuthEndpoints : ControllerBase
         var cookiesOptions = new CookieOptions()
         {
             HttpOnly = true,
-            SameSite = SameSiteMode.Lax,
+            SameSite = SameSiteMode.None,
             Expires = expiresAt,
             Secure = true
         };
@@ -194,11 +194,12 @@ public class AuthEndpoints : ControllerBase
         var cookiesOptions = new CookieOptions()
         {
             HttpOnly = true,
-            SameSite = SameSiteMode.Lax,
+            SameSite = SameSiteMode.None,
             Expires = expiresAt,
             Secure = true
         };
         
+        _httpContextAccessor.HttpContext.Response.Cookies.Delete("RefreshToken");
         _httpContextAccessor.HttpContext.Response.Cookies.Append("RefreshToken", newRefreshToken, cookiesOptions);
 
         await _sessionService.ExtendSessionAsync(sessionIdAsGuid, newRefreshToken, expiresAt);
@@ -234,7 +235,15 @@ public class AuthEndpoints : ControllerBase
         }
 
         await _sessionService.InvalidateSessionAsync(Guid.Parse(sessionId));
-        _httpContextAccessor.HttpContext.Response.Cookies.Delete("RefreshToken");
+        
+        var cookiesOptions = new CookieOptions()
+        {
+            HttpOnly = true,
+            SameSite = SameSiteMode.None,
+            Secure = true
+        };
+        
+        _httpContextAccessor.HttpContext.Response.Cookies.Delete("RefreshToken", cookiesOptions);
         
         return Ok();
     }
