@@ -53,7 +53,8 @@ public class OrderController : ControllerBase
         try
         {
             if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && 
-                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _hotelService.GetUserIdByHotel(hotelId))
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _hotelService.GetUserIdByHotel(hotelId) &&
+                !_httpContextAccessor.HttpContext.User.IsInRole(Roles.Client))
             {
                 return Forbid();
             }
