@@ -26,8 +26,8 @@ public class Comment
         {
             Id = Id,
             Text = Text,
-            Order = Order,
-            ModifiedAt = ModifiedAt
+            ModifiedAt = ModifiedAt,
+            Username = User?.UserName
         };
     }
 }

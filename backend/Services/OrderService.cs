@@ -106,7 +106,7 @@ public class OrderService : IOrderService
             throw new Exception("Order not found");
         }
 
-        var price = _calculationsService.CalculatePrice(request.PeopleCount, request.PeopleCount, request.Breakfast,
+        var price = _calculationsService.CalculatePrice(request.PeopleCount, request.Period, request.Breakfast,
             request.RoomType, hotel);
 
         order.RoomType = request.RoomType;

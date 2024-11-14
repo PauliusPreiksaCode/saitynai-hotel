@@ -21,6 +21,7 @@ public class CommentService : ICommentService
 
         var comments = await _context.Comment
             .Include(c => c.Order)
+            .Include(c => c.User)
             .Where(c => c.Order.Id.Equals(orderId))
             .ToListAsync();
 
@@ -58,11 +59,14 @@ public class CommentService : ICommentService
             CreatedAt = DateTime.Now,
             ModifiedAt = DateTime.Now,
             Order = order!,
-            UserId = userId
+            UserId = userId,
         };
 
         await _context.Comment.AddAsync(comment);
         await _context.SaveChangesAsync();
+
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+        comment.User = user;
 
         return comment.ToDto();
     }
