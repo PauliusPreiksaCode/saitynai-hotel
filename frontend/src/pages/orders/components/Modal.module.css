@@ -1,0 +1,85 @@
+.HomeContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    align-items: center;
+}
+
+.TitleContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem; 
+}
+
+.HotelsContainer {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.HotelCard {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    max-width: 22rem;
+    height: 100%;
+}
+
+.HotelCard:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    transition: box-shadow 0.3s, transform 0.3s;
+    cursor: pointer;
+}
+
+.HotelPhoto {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.HotelInfo {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex-grow: 1;
+}
+
+.HotelDialogPhoto {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-right: 1rem;
+}
+
+.searchBox {
+    margin-bottom: 2rem;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.24);
+    width: 80%;
+}
+
+.searchInput .MuiOutlinedInput-root {
+
+    fieldset {
+        border-color: #1976d2;
+    }
+    &:hover fieldset {
+        border-color: #115293;
+    }
+    &.Mui-focused fieldset {
+        border-color: #115293; 
+    }
+}

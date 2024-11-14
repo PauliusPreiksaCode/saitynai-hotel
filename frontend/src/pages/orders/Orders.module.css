@@ -1,0 +1,12 @@
+.OrdersContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    align-items: center;
+}
+
+.TitleContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem; 
+}
