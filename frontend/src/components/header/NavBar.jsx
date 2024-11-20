@@ -15,7 +15,7 @@ const Navbar = () => {
       {userAccessLevel !== undefined && userAccessLevel === "Client" && (
         <UserNavBar />
       )}
-      {userAccessLevel !== undefined && userAccessLevel === "HotelPersonnel" && (
+      {userAccessLevel !== undefined && (userAccessLevel === "HotelPersonnel" || userAccessLevel === 'Admin') && (
         <HotelNavBar />
       )}
 

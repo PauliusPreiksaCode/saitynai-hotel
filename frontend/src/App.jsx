@@ -15,16 +15,17 @@ const App = () => {
     <Routes>
       <Route exact path="/" element={<Home />}
       />
-      {/* <Route path="/user-panel" element=
-          {
-            <PrivateRoute accessLevel={['0', '1', '2']}>
-              <UserPanel />
-            </PrivateRoute>
-          } 
-        /> */}
         <Route path="/login" element={<Login />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/hotelOrders" element={<HotelOrders />} />
+        <Route path="/orders" element={
+          <PrivateRoute accessLevel={['Client']}>
+            <Orders />
+          </PrivateRoute>
+          } />
+        <Route path="/hotelOrders" element={
+          <PrivateRoute accessLevel={['Admin', 'HotelPersonnel']}>
+            <HotelOrders />
+          </PrivateRoute>
+          } />
         <Route path='/registerClient' element={<ClientRegister />} />
         <Route path='/registerPersonel' element={<PersonelRegister />} />
 

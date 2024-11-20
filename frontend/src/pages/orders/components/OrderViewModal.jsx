@@ -35,9 +35,11 @@ const OrderViewModal = ({open, handleClose, hotelId, orderId}) => {
     setOrder(getOrder.data);
   }, [getOrder.data]);
 
-  if(getOrder.isLoading || getOrder.isFetching) {
+  if(getOrder.isLoading || getOrder.isFetching || !order) {
     return <CircularProgress />
   }
+
+
 
   return (
     <>
@@ -55,21 +57,33 @@ const OrderViewModal = ({open, handleClose, hotelId, orderId}) => {
           <CloseIcon />
         </IconButton>
       </div>
-      <DialogTitle>
-        <Typography variant="h4">Order</Typography>
+      <DialogTitle style={{background: '#EFFCFF'}}>
+        <Typography fontSize={35}>Order</Typography>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent style={{background: '#EFFCFF'}}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <img src={order?.hotel?.photo} alt={order?.hotel?.name} className={styles.HotelDialogPhoto} />
           </Grid>
           <Grid item xs={6}>
-            <Grid item xs={12}>
-              <Typography variant="h5">Hotel name: {order?.hotel?.name}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h5">Location: {order?.hotel?.location}</Typography>
-            </Grid>
+             <Grid item xs={12}>
+                 <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Hotel name: {order?.hotel?.name}</Typography>
+             </Grid>
+             <Grid item xs={12}>
+                 <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Location: {order?.hotel?.location}</Typography>
+             </Grid>
+             <Grid item xs={12}>
+                 <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Standard price: {order?.hotel?.standardPrice}</Typography>
+             </Grid>
+             <Grid item xs={12}>
+                 <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Deluxe price: {order?.hotel?.deluxePrice}</Typography>
+             </Grid>
+             <Grid item xs={12}>
+                 <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Suite price: {order?.hotel?.suitePrice}</Typography>
+             </Grid>
+             <Grid item xs={12}>
+                 <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Breakfast price: {order?.hotel?.breakfastPrice}</Typography>
+             </Grid>
           </Grid>
           <Grid item xs={6}>
             Stay duration
@@ -82,7 +96,6 @@ const OrderViewModal = ({open, handleClose, hotelId, orderId}) => {
               type="number"
               value={order?.period}
               variant="outlined"
-              editable={false}
             />
           </Grid>
           <Grid item xs={6}>
@@ -96,7 +109,6 @@ const OrderViewModal = ({open, handleClose, hotelId, orderId}) => {
               type="number"
               value={order?.peopleCount}
               variant="outlined"
-              editable={false}
             />
           </Grid>
           <Grid item xs={6}>
@@ -112,8 +124,8 @@ const OrderViewModal = ({open, handleClose, hotelId, orderId}) => {
                 labelId="Type"
                 name="roomType"
                 value={order?.roomType}
+                defaultValue={0}
                 label="Room type"
-                editable={false}
               >
                 <MenuItem value="0">Standard</MenuItem>
                 <MenuItem value="1">Deluxe</MenuItem>
@@ -137,7 +149,7 @@ const OrderViewModal = ({open, handleClose, hotelId, orderId}) => {
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions>
+      <DialogActions style={{background: '#EFFCFF'}}>
         <div
             style={{
                 display: "flex",
@@ -156,7 +168,7 @@ const OrderViewModal = ({open, handleClose, hotelId, orderId}) => {
             View comments
           </Button>
         </div>
-      </DialogActions>
+      </DialogActions >
     </Dialog>
     {openComments && (
       <ViewComments 

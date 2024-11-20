@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars, react/prop-types */
 
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Typography, useMediaQuery } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect, useState, useMemo } from "react";
 import styles from "./Orders.module.css";
@@ -25,6 +26,9 @@ const Orders = () => {
   const [showOrderEditModal, setShowOrderEditModal] = useState(false);
   const [showOrderRemoveModal, setShowOrderRemoveModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const memoizedHotelIds = useMemo(() => {
     return getAllHotels?.data?.map((hotel) => hotel.id) || [];
@@ -62,14 +66,14 @@ const Orders = () => {
   }
 
   const columns = [
-    { field: "hotel", headerName: "Hotel name", minWidth: 200, renderCell: (params) => params.row.hotel.name },
-    { field: "roomType", headerName: "Room type", minWidth: 150, renderCell: (params) => roomTypes[params.row.roomType] },
-    { field: "breakfast", headerName: "Breakfast", minWidth: 200, renderCell: (params) => params.row.breakfast ? "Bought" : "Not bought"},
-    { field: "orderDate", headerName: "Order date", minWidth: 200, renderCell: (params) => params.row.orderDate.split("T")[0] },
-    { field: "peopleCount", headerName: "Number of people", minWidth: 200 },
-    { field: "period", headerName: "Reservation in days", minWidth: 200 },
-    { field: "price", headerName: "Price", minWidth: 200 },
-    { field: "actions", headerName: "Actions", minWidth: 110, maxWidth: 110, sortable: false, flex: 1, 
+    { field: "hotel", headerName: "Hotel name", minWidth: 200,  renderCell: (params) => params.row.hotel.name },
+    { field: "roomType", headerName: "Room type", minWidth: 100, renderCell: (params) => roomTypes[params.row.roomType] },
+    { field: "breakfast", headerName: "Breakfast", minWidth: 120, renderCell: (params) => params.row.breakfast ? "Bought" : "Not bought"},
+    { field: "orderDate", headerName: "Order date",  minWidth: 150, renderCell: (params) => params.row.orderDate.split("T")[0] },
+    { field: "peopleCount", headerName: "Number of people",  minWidth: 150},
+    { field: "period", headerName: "Reservation in days",  minWidth: 150 },
+    { field: "price", headerName: "Price",  minWidth: 120 },
+    { field: "actions", headerName: "Actions",  maxWidth: 110, sortable: false, 
       renderCell: (params) => {
         return (
           <div style={{ margin: "auto" }}>
@@ -126,9 +130,16 @@ const Orders = () => {
       <Box >
         <Grid container spacing={2}>
           {orders.length > 0 ? (
+            <Box
+            sx={{
+              width: '100%',
+              overflowX: isSmallScreen ? 'auto' : 'visible',
+              maxWidth: isSmallScreen ? '45rem' : '100%',
+            }}
+            >
             <DataGrid
-              autoWidth
               autoHeight
+              minWidth={800}
               border={"none"}
               rows={orders}
               columns={columns}
@@ -146,7 +157,13 @@ const Orders = () => {
               columnVisibilityModel={{
                 id: false,
               }}
+              sx={{
+                '& .MuiDataGrid-columnHeader': {
+                  textAlign: isSmallScreen ? 'center' : 'left',
+                },
+              }}
               />
+              </Box>
             ) : (
             <Grid item xs={12}>
               <Typography variant="h5" style={{display: "flex", justifyContent: "center"}}>No orders found</Typography>

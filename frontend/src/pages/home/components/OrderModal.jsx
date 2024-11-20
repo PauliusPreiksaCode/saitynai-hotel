@@ -30,11 +30,15 @@ import { useNavigate } from "react-router-dom";
 import { ROUTE_PATHS } from "../../../constants/routePaths";
 import { UserContext } from "../../../services/authProvider";
 import { createOrder } from "../../../services/api";
+import DeleteHotel from "./DeleteHotel";
+import EditHotel from "./EditHotel";
   
 const OrderModal = ({ open, setOpen, hotel }) => {
     const [startDate, setStartDate] = useState(dayjs(new Date()));
     const [endDate, setEndDate] = useState(dayjs(new Date()));
     const [price, setPrice] = useState(20);
+    const [deleteHotel, setDeleteHotel] = useState(false);
+    const [editHotel, setEditHotel] = useState(false);
     const navigate = useNavigate();
 
     const userCtx = useContext(UserContext);
@@ -75,6 +79,7 @@ const OrderModal = ({ open, setOpen, hotel }) => {
     }
 
     return (
+        <>
         <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
         <div
             style={{
@@ -89,8 +94,8 @@ const OrderModal = ({ open, setOpen, hotel }) => {
             <CloseIcon />
             </IconButton>
         </div>
-        <DialogTitle>
-            <Typography variant="h4">Book a hotel</Typography>
+        <DialogTitle style={{background: '#EFFCFF'}}>
+            <Typography fontSize={35}>Book a hotel</Typography>
         </DialogTitle>
         <Formik
             initialValues={initialValues}
@@ -108,7 +113,11 @@ const OrderModal = ({ open, setOpen, hotel }) => {
                 await createOrder(hotel.id, order);
 
                 setOpen(false);
-                navigate(ROUTE_PATHS.ORDERS);
+
+                if (userRole === "Admin") 
+                    navigate('/hotelOrders') 
+                else
+                    navigate(ROUTE_PATHS.ORDERS);
             }}
             validationSchema={bookingValidation}
         >
@@ -122,17 +131,30 @@ const OrderModal = ({ open, setOpen, hotel }) => {
                 resetForm,
             }) => (
             <Form>
-                <DialogContent>
+                <DialogContent style={{background: '#EFFCFF'}}>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <img src={hotel?.photo} alt={hotel?.name} className={styles.HotelDialogPhoto} />
                         </Grid>
                         <Grid item xs={6}>
                             <Grid item xs={12}>
-                                <Typography variant="h5">Hotel name: {hotel?.name}</Typography>
+                                <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Hotel name: {hotel?.name}</Typography>
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="h5">Location: {hotel?.location}</Typography>
+                                <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Location: {hotel?.location}</Typography>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Standard price: {hotel?.standardPrice}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Deluxe price: {hotel?.deluxePrice}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Suite price: {hotel?.suitePrice}</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Breakfast price: {hotel?.breakfastPrice}</Typography>
                             </Grid>
                         </Grid>
                         <Grid item xs={6}>
@@ -240,7 +262,7 @@ const OrderModal = ({ open, setOpen, hotel }) => {
                         </Grid>
                     </Grid>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions style={{background: '#EFFCFF'}}>
                 <div
                     style={{
                         display: "flex",
@@ -261,10 +283,28 @@ const OrderModal = ({ open, setOpen, hotel }) => {
                             Add reservation
                         </Button>
                     }
+                    { (userRole === "Admin" || userRole === "HotelPersonnel") && 
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => setDeleteHotel(true)}
+                        >
+                            Delete Hotel
+                        </Button>
+                    }
+                    { (userRole === "Admin" || userRole === "HotelPersonnel") &&
+                        <Button
+                            variant="contained"
+                            color="warning"
+                            onClick={() => setEditHotel(true)}
+                        >
+                            Edit Hotel
+                        </Button>
+                    }
                     <Button
                         onClick={() => handleClose(resetForm)}
                         variant="contained"
-                        color="error"
+                        color="primary"
                     >
                         Cancel
                     </Button>
@@ -274,6 +314,23 @@ const OrderModal = ({ open, setOpen, hotel }) => {
             )}
         </Formik>
         </Dialog>
+        {deleteHotel && (
+            <DeleteHotel 
+                open={deleteHotel} 
+                handleClose={() => setDeleteHotel(false)} 
+                hotelId={hotel.id}
+                handleOrderClose={() => setOpen(false)}
+            />
+        )}
+        {editHotel && (
+            <EditHotel 
+                open={editHotel} 
+                handleClose={() => setEditHotel(false)} 
+                id={hotel.id}
+                handleOrderClose={() => setOpen(false)}
+            />
+        )}
+        </>
     );
 };
 

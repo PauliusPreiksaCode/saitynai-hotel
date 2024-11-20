@@ -61,35 +61,43 @@ const ViewComments = ({open, handleClose, hotelId, orderId}) => {
                 <CloseIcon />
             </IconButton>
         </div>
-        <DialogTitle>
-            <Typography variant="h4">Comments</Typography>
+        <DialogTitle style={{background: '#EFFCFF'}}>
+            <Typography style={{fontSize: '2rem'}}>Comments</Typography>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent style={{background: '#EFFCFF'}}>
             <Grid containerstyle={{margin: '0.5rem'}}>
                 {comments?.map((comment) => (
                     <Grid container key={comment.id} style={{margin: '0.5rem'}}>
-                    <Grid item xs={11}>
+                    <Grid item xs={10.75}>
                         <TextField
                             fullWidth
                             value={`${comment.username}: ${comment.text} (${comment.modifiedAt.split('T')[0]})`}
                         >
                         </TextField>
                     </Grid>
-                    <Grid item xs={1} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Grid item xs={1.25} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         {username === comment.username && (
                         <>
+                            <Grid container>
+                                <Grid item xs={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: '0.5rem'}}>
                             <IconButton
+                                color="error"
                                 onClick={() => handleDelete(comment.id)}
                             >
                                 <DeleteForeverIcon />
                             </IconButton>
+                            </Grid>
+                            <Grid item xs={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                             <IconButton
+                                color="warning"
                                 onClick={() => {
                                     setEditComment(comment); 
                                     setOpenEdit(true)}}
                                 >
                                 <EditNoteIcon />
                             </IconButton>
+                            </Grid>
+                            </Grid>
                         </>
                         )}
                         </Grid>
@@ -97,20 +105,19 @@ const ViewComments = ({open, handleClose, hotelId, orderId}) => {
                 ))}
             </Grid>
             <Grid container>
-                <Grid item xs={11} style={{ margin: 'auto'}}>
+                <Grid item xs={12} style={{ margin: 'auto', paddingLeft: '0.5rem'}}>
                     <TextField
                         multiline
                         fullWidth
-                        rows={4}
+                        rows={2}
                         label="Comment"
                         variant="outlined"
                         onChange={(e) => setComment(e.target.value)}
-                        style={{ margin: "1rem" }}
                     />
                 </Grid>
             </Grid>
         </DialogContent>
-            <DialogActions>
+            <DialogActions style={{background: '#EFFCFF'}}>
             <div
                 style={{
                     display: "flex",

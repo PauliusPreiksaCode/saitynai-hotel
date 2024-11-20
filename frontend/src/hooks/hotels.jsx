@@ -24,10 +24,10 @@ export const useCreateHotel = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: addHotel,
+    mutationFn: ({hotel}) =>  addHotel(hotel),
     onSuccess: (e) => {
       if(e !== undefined)
-        toastService.success('Viešbutis sėkmingai sukurtas!');
+        toastService.success('Hotel created successfully!');
       queryClient.invalidateQueries(['get-hotel-list']);
     },
   });
@@ -37,10 +37,11 @@ export const useUpdateHotel = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateHotel,
+    mutationFn: ({id, hotel}) => updateHotel(id, hotel),
     onSuccess: (e) => {
       if(e !== undefined)
-        toastService.success('Viešbutis sėkmingai atnaujintas!');
+        toastService.success('Hotel updated successfully!');
+
       queryClient.invalidateQueries(['get-hotel-list']);
     },
   });
@@ -50,9 +51,9 @@ export const useRemoveHotel = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteHotel,
+    mutationFn: ({id}) => deleteHotel(id),
     onSuccess: (e) => {
-      if(e !== undefined) toastService.success('Viešbutis sėkmingai pašalintas!');
+      if(e !== undefined) toastService.success('hotel removed successfully!');
       queryClient.invalidateQueries(['get-hotel-list']);
     },
   });

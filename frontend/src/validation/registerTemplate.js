@@ -3,18 +3,18 @@ import * as yup from 'yup';
 export const registerTemplate = yup.object({
   username: yup
     .string()
-    .required('Reikalingas vartotojo vardas'),
+    .required('Username is required'),
   password: yup
     .string()
-    .required('Reikalingas slaptažodis'),
+    .required('Password is required'),
   email: yup
     .string()
-    .email('Neteisingas el. pašto formatas')
-    .required('Reikalingas el. paštas'),
+    .email('Invalid email format')
+    .required('Email is required'),
   name: yup
     .string()
-    .required('Reikalingas vardas'),
+    .required('Name is required'),
   surname: yup
     .string()
-    .required('Reikalinga pavardė'),
+    .required('Surname is required'),
 });

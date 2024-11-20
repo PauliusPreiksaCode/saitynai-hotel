@@ -38,30 +38,42 @@ const EditComments = ({open, handleClose, hotelId, orderId, comment}) => {
                 <CloseIcon />
             </IconButton>
         </div>
-        <DialogTitle>
-            <Typography variant="h4">Edit Comment</Typography>
+        <DialogTitle style={{background: '#EFFCFF'}}>
+            <Typography style={{fontSize: '2rem'}}>Edit Comment</Typography>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent style={{background: '#EFFCFF'}}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <TextField
                         fullWidth
                         multiline
-                        rows={4}
+                        rows={2}
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
                     />
                 </Grid>
             </Grid>
         </DialogContent>
-        <DialogActions>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleUpdate}
+        <DialogActions style={{background: '#EFFCFF'}}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "auto",
+                    marginBottom: "1rem",
+                    gap: "1rem",
+                }}
             >
-                Update
-            </Button>
+                <Button
+                    size='large'
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUpdate}
+                >
+                    Update
+                </Button>
+            </div>
         </DialogActions>
         </Dialog>
         </>

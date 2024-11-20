@@ -4,7 +4,7 @@ import authService from './auth';
 const token = authService.getToken();
 
 const instance = axios.create({
-  baseURL: 'https://localhost:7141/api/v1/',
+  baseURL: 'https://saitynai-hotel.azurewebsites.net/api/v1/',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

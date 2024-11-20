@@ -7,7 +7,8 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import { NavLink } from "react-router-dom";
 import "../../global.css";
 import "../../assets/plugins/bootstrap/css/bootstrap.min.css";
-
+import { Link } from "react-router-dom";
+import Logo from '../../assets/Logo.svg';
 
 const UserNavBar = () => {
     const user = useContext(UserContext);
@@ -26,8 +27,12 @@ const UserNavBar = () => {
             expand="lg"
             className="bg-body-tertiary sticky-top"
             collapseOnSelect
+            style={{ margin: '0px', padding: '0px' }}
           >
-            <Container fluid>
+            <Container fluid style={{background: '#C6E7FF'}}>
+            <Navbar.Brand as={Link} to="/" style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={Logo} alt="logo" style={{ width: '70px', height: '70px', marginRight: '5px' }} />
+              </Navbar.Brand>
               <Navbar.Toggle
                 onClick={handleShowOffcanvas}
                 aria-controls="offcanvasNavbar"
@@ -40,7 +45,7 @@ const UserNavBar = () => {
                 onHide={handleCloseOffcanvas}
               >
                 <Offcanvas.Header closeButton>
-                  <Offcanvas.Title id="offcanvasNavbarLabel">Meniu</Offcanvas.Title>
+                  <Offcanvas.Title id="offcanvasNavbarLabel">Menu</Offcanvas.Title>
                 </Offcanvas.Header>
                 <Offcanvas.Body>
                   <Nav className="justify-content-end flex-grow-1 pe-3">
@@ -51,7 +56,7 @@ const UserNavBar = () => {
                         isActive ? "nav-link active" : "nav-link"
                       }
                     >
-                      Pagrindinis
+                      Home
                     </NavLink>
                     <NavLink
                       to="/orders"
@@ -60,7 +65,7 @@ const UserNavBar = () => {
                         isActive ? "nav-link active" : "nav-link"
                       }
                     >
-                      Užsakymai
+                      Orders
                     </NavLink>
                     <NavLink
                       to="/login"
@@ -69,7 +74,7 @@ const UserNavBar = () => {
                         isActive ? "nav-link active" : "nav-link"
                       }
                     >
-                      Atsijungti
+                      Logout
                     </NavLink>
                   </Nav>
                 </Offcanvas.Body>

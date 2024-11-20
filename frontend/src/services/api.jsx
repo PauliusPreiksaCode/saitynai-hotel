@@ -8,6 +8,7 @@ export async function login(user) {
     .then((res) => {
       const token = res.data;
       authService.setCookies(token);
+      toastService.success("Logged in successfully!");
       return { token };
     })
     .catch((err) => {
@@ -18,6 +19,7 @@ export async function login(user) {
 export async function registerClient(user) {
   try {
     const response = await instance.post("auth/registerClient", user);
+    toastService.success("Client registered successfully!");
     return response.data;
   } catch (error) {
     toastService.error(error.response.data);
@@ -27,6 +29,7 @@ export async function registerClient(user) {
 export async function registerPersonel(user) {
   try {
     const response = await instance.post("auth/registerHotelPersonel", user);
+    toastService.success("Personel registered successfully!");
     return response.data;
   } catch (error) {
     toastService.error(error.response.data);
@@ -135,7 +138,10 @@ export async function createOrder(hotelId, order) {
 export async function updateOrder(hotelId, orderId, order) {
   return await instance
     .put(`hotels/${hotelId}/orders/${orderId}`, order)
-    .then((res) => res.data)
+    .then((res) => {
+      toastService.success("Order updated successfully!");
+      return res.data;
+    } )
     .catch((err) => {
       toastService.error(err.response.data);
     });

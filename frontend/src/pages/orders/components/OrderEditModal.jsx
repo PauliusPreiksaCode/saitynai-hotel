@@ -29,8 +29,6 @@ import { bookingValidation } from "../../../validation/bookingValidation";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Form, Formik } from "formik";
-import { useNavigate } from "react-router-dom";
-
 
 
 const OrderEditModal = ({open, handleClose, hotelId, orderId}) => {
@@ -40,7 +38,6 @@ const OrderEditModal = ({open, handleClose, hotelId, orderId}) => {
     const getOrder = useGetOrderById(hotelId, orderId);
     const [startDate, setStartDate] = useState(dayjs(new Date()));
     const [endDate, setEndDate] = useState(dayjs(new Date()));
-    const navigate = useNavigate();
 
     useEffect(() => {
         const data = getOrder.data;
@@ -102,7 +99,7 @@ const OrderEditModal = ({open, handleClose, hotelId, orderId}) => {
             <CloseIcon />
             </IconButton>
         </div>
-        <DialogTitle>
+        <DialogTitle style={{background: '#EFFCFF'}}>
             <Typography variant="h4">Edit order</Typography>
         </DialogTitle>
         <Formik
@@ -136,18 +133,30 @@ const OrderEditModal = ({open, handleClose, hotelId, orderId}) => {
                 resetForm,
             }) => (
             <Form>
-                <DialogContent>
+                <DialogContent style={{background: '#EFFCFF'}}>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <img src={order?.hotel?.photo} alt={order?.hotel?.name} className={styles.HotelDialogPhoto} />
                         </Grid>
                         <Grid item xs={6}>
-                            <Grid item xs={12}>
-                                <Typography variant="h5">Hotel name: {order?.hotel?.name}</Typography>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Typography variant="h5">Location: {order?.hotel?.location}</Typography>
-                            </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Hotel name: {order?.hotel?.name}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Location: {order?.hotel?.location}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Standard price: {order?.hotel?.standardPrice}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Deluxe price: {order?.hotel?.deluxePrice}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Suite price: {order?.hotel?.suitePrice}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h5" style={{ borderBottom: '.1rem solid grey'}}>Breakfast price: {order?.hotel?.breakfastPrice}</Typography>
+                        </Grid>
                         </Grid>
                         <Grid item xs={6}>
                             Stay duration
@@ -257,7 +266,7 @@ const OrderEditModal = ({open, handleClose, hotelId, orderId}) => {
                         </Grid>
                     </Grid>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions style={{background: '#EFFCFF'}}>
                 <div
                     style={{
                         display: "flex",

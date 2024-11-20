@@ -33,8 +33,8 @@
     - Footer
 -------------------------------------------------- */
 /* Google fonts --------------------------- */
-@import url("https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;500;600;700;800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 
 /* ----------------------------------------------------------------
     - General Styles
@@ -51,23 +51,17 @@
   --bs-warning: #ffb14f;
   --bs-warning-rgb: 255, 177, 79;
   --bs-font-caveat: "Caveat", cursive;
-  --bs-font-sans-serif: "Wix Madefor Display", sans-serif, system-ui,
-    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans",
-    "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-font-sans-serif: "Poppins", sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
   --bs-gradient: linear-gradient(#f8f4f3, #fff);
 }
 
 [data-bs-theme="dark"] {
-  /* --bs-body-color: #91989e; */
-  /* --bs-body-bg: #1a1d21; */
-  /* --bs-body-bg: #191e25; */
   --bs-body-bg: #1e242d;
-  /* --bs-light-rgb: 33, 37, 41; */
   --bs-light: #12161c;
   --bs-light-rgb: 18, 22, 28;
-  /* --bs-light-rgb: 25, 30, 37; */
-  /* --bs-dark-rgb: 255, 255, 255; */
   --bs-border-color: #30353b;
   --bs-gradient: linear-gradient(#12161c, #1e242d);
 }
@@ -77,9 +71,17 @@ html * {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  background-color: #FBFBFB !important; 
+}
+
 a {
   text-decoration: none;
   color: inherit;
+}
+
+* {
+  font-family: var(--bs-font-sans-serif) !important;
 }
 
 .h1,

@@ -10,19 +10,23 @@ import 'react-toastify/dist/ReactToastify.css';
 import TOAST_STYLES from './constants/toastStyle';
 import Navbar from './components/header/NavBar';
 import Footer from './components/footer/Footer';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 const queryClient = new QueryClient();
+const theme = createTheme();
 
 root.render(
   <><ToastContainer {...TOAST_STYLES} />
   <AuthenticationProvider>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+      <ThemeProvider theme={theme}>
         <Navbar />
         <App />
         <Footer />
+      </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </AuthenticationProvider>

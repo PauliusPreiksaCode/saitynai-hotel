@@ -1,4 +1,3 @@
-import { useRemoveOrder } from "../../../hooks/order";
 import {
     Dialog,
     DialogTitle,
@@ -7,37 +6,37 @@ import {
     Button,
     DialogActions
 } from "@mui/material";
-import React from "react";
+import { useRemoveHotel } from "../../../hooks/hotels";
 import CloseIcon from "@mui/icons-material/Close";
 
+const DeleteHotel = ({open, handleClose, hotelId, handleOrderClose}) => {
 
-const OrderDeleteModal = ({open, handleClose, hotelId, orderId}) => {
+    const removeHotel = useRemoveHotel();
 
-  const removeOrder = useRemoveOrder();
+    const handleDelete = async () => {
+        await removeHotel.mutateAsync({id: hotelId});
+        handleClose();
+        handleOrderClose();
+    }
 
-  const handleDelete = async() => {
-    await removeOrder.mutateAsync({hotelId, orderId});
-    handleClose();
-  }
-
-  return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <div
-        style={{
-          position: "absolute",
-          top: "0",
-          right: "0",
-          padding: "0.5rem",
-          cursor: "pointer",
-        }}
-      >
+    return (
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+        <div
+            style={{
+            position: "absolute",
+            top: "0",
+            right: "0",
+            padding: "0.5rem",
+            cursor: "pointer",
+            }}
+        >
         <IconButton onClick={handleClose}>
           <CloseIcon />
         </IconButton>
       </div>
       <DialogTitle style={{background: '#EFFCFF'}}>
         <Typography style={{display: 'flex', justifyContent: 'center', marginTop: '2rem', fontSize: '2rem'}}>
-          Are you sure you want to delete this order?
+            Are you sure you want to delete this hotel?
         </Typography>
       </DialogTitle>
       <DialogActions style={{background: '#EFFCFF'}}>
@@ -60,7 +59,7 @@ const OrderDeleteModal = ({open, handleClose, hotelId, orderId}) => {
         </div>
       </DialogActions>
     </Dialog>
-  )
+    );
 };
 
-export default OrderDeleteModal;
+export default DeleteHotel;

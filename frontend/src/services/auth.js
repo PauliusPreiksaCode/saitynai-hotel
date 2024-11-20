@@ -4,7 +4,7 @@ import axios from 'axios';
 async function renewToken () {
   try {
     const result = await axios.post(
-      'https://localhost:7141/api/v1/auth/accessToken',
+      'https://saitynai-hotel.azurewebsites.net/api/v1/auth/accessToken',
       {},
       { withCredentials: true }
     );
