@@ -149,6 +149,7 @@ public class OrderController : ControllerBase
         try
         {
             if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && 
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _hotelService.GetUserIdByHotel(hotelId) &&
                 _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _orderService.GetUserIdByOrder(id))
             {
                 return Forbid();
@@ -176,6 +177,7 @@ public class OrderController : ControllerBase
         try
         {
             if (!_httpContextAccessor.HttpContext.User.IsInRole(Roles.Admin) && 
+                _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _hotelService.GetUserIdByHotel(hotelId) &&
                 _httpContextAccessor.HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != await _orderService.GetUserIdByOrder(id))
             {
                 return Forbid();

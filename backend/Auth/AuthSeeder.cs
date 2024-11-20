@@ -26,10 +26,10 @@ public class AuthSeeder
     {
         var newAdmin = new User()
         {
-            Name = "Admin",
-            Surname = "Admin",
-            UserName = "Admin",
-            Email = "admin@admin.ktu"
+            Name = "admin1",
+            Surname = "admin1",
+            UserName = "admin1",
+            Email = "admin1@admin.ktu"
         };
 
         var existAdminUser = await _userManager.FindByNameAsync(newAdmin.UserName);
@@ -38,7 +38,7 @@ public class AuthSeeder
             var createdAdmin = await _userManager.CreateAsync(newAdmin, _configuration["Admin:Password"]);
             if (createdAdmin.Succeeded)
             {
-                await _userManager.AddToRolesAsync(newAdmin, Roles.All);
+                await _userManager.AddToRoleAsync(newAdmin, Roles.Admin);
             }
         }
     }
