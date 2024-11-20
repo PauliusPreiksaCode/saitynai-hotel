@@ -53,7 +53,7 @@ export const useRemoveHotel = () => {
   return useMutation({
     mutationFn: ({id}) => deleteHotel(id),
     onSuccess: (e) => {
-      if(e !== undefined) toastService.success('hotel removed successfully!');
+      if(e !== undefined) toastService.success('Hotel removed successfully!');
       queryClient.invalidateQueries(['get-hotel-list']);
     },
   });

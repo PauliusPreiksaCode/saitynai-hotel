@@ -26,7 +26,7 @@ export const useCreateComment = () => {
     return useMutation({
         mutationFn: ({hotelId, orderId, comment}) => createComment(hotelId, orderId, comment),
         onSuccess: (e) => {
-            if (e !== undefined) toastService.success('Komentaras sėkmingai sukurtas!');
+            if (e !== undefined) toastService.success('Comment created successfully!');
             queryClient.invalidateQueries(['get-comments-list']);
         },
     });
@@ -38,7 +38,7 @@ export const useUpdateComment = () => {
     return useMutation({
         mutationFn: ({hotelId, orderId, commentId, comment}) =>  updateComment(hotelId, orderId, commentId, comment),
         onSuccess: (e) => {
-            if (e !== undefined) toastService.success('Komentaras sėkmingai atnaujintas!');
+            if (e !== undefined) toastService.success('Comment updated successfully!');
             queryClient.invalidateQueries(['get-comments-list']);
         },
     });
@@ -50,7 +50,7 @@ export const useRemoveComment = () => {
     return useMutation({
         mutationFn: ({hotelId, orderId, commentId}) => deleteComment(hotelId, orderId, commentId),
         onSuccess: (e) => {
-            if (e !== undefined) toastService.success('Komentaras sėkmingai pašalintas!');
+            if (e !== undefined) toastService.success('Comment removed successfully!');
             queryClient.invalidateQueries(['get-comments-list']);
         },
     });

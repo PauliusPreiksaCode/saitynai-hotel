@@ -36,7 +36,7 @@ export const useCreateOrder = () => {
     return useMutation({
         mutationFn: createOrder,
         onSuccess: (e) => {
-            if (e !== undefined) toastService.success('Užsakymas sėkmingai sukurtas!');
+            if (e !== undefined) toastService.success('Order created successfully!');
             queryClient.invalidateQueries(['get-orders-list']);
         },
     });
@@ -49,7 +49,7 @@ export const useUpdateOrder = () => {
     return useMutation({
         mutationFn: ({hotelId, orderId, order}) => updateOrder(hotelId, orderId, order),
         onSuccess: (e) => {
-            if (e !== undefined) toastService.success('Užsakymas sėkmingai atnaujintas!');
+            if (e !== undefined) toastService.success('Order updated successfully!');
             queryClient.invalidateQueries(['get-orders-list']);
             navigate('/orders');
         },
@@ -62,7 +62,7 @@ export const useRemoveOrder = () => {
     return useMutation({
         mutationFn: ({hotelId, orderId}) => deleteOrder(hotelId, orderId),
         onSuccess: (e) => {
-            if (e !== undefined) toastService.success('Užsakymas sėkmingai pašalintas!');
+            if (e !== undefined) toastService.success('Order removed successfully!');
             queryClient.invalidateQueries(['get-orders-list']);
         },
     });

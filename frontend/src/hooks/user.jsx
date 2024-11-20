@@ -12,7 +12,7 @@ export const useRegisterClient = () => {
     mutationFn: registerClient,
     onSuccess: (e) => {
       if(e !== undefined)
-        toastService.success('Vartotojas sėkmingai sukurtas!');
+        toastService.success('User created successfully!');
       queryClient.invalidateQueries(['get-user-list']);
       navigate('/login');
     },
@@ -27,7 +27,7 @@ export const useRegisterPersonel = () => {
     mutationFn: registerPersonel,
     onSuccess: (e) => {
       if(e !== undefined)
-        toastService.success('Vartotojas sėkmingai sukurtas!');
+        toastService.success('User created successfully!');
       queryClient.invalidateQueries(['get-user-list']);
       navigate('/login');
     },

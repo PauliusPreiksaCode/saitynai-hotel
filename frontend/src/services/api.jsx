@@ -129,7 +129,10 @@ export async function getOrderById(hotelId, orderId) {
 export async function createOrder(hotelId, order) {
   return await instance
     .post(`hotels/${hotelId}/orders`, order)
-    .then((res) => res.data)
+    .then((res) => {
+      toastService.success("Order created successfully!");
+      return res.data;
+    } )
     .catch((err) => {
       toastService.error(err.response.data);
     });
