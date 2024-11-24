@@ -10,6 +10,422 @@
     }
   ],
   "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Login to the application",
+        "description": "Authenticates a user and returns a JWT token for authorization.",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUserRequest"
+              },
+              "example": {
+                "username": "john_doe",
+                "password": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User authenticated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginUserResponse"
+                },
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZjI4ZjQwZjIwZjIwZjIwZjIwZjIwZjIiLCJpYXQiOjE1OTk4NzQwNzQsImV4cCI6MTU5OTg3NzY3NH0.71b9b8"
+                }
+              }
+            },
+              "headers": {
+                "Authorization": {
+                  "description": "Bearer token for authorization",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+          "400": {
+            "description": "Invalid request due to incorrect JSON format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Wrong JSON format",
+                  "errorCode": 400
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "User not found",
+                  "errorCode": 404
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Password not correct",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Password not correct",
+                  "errorCode": 422
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout from the application",
+        "description": "Logs out a user and invalidates the JWT token.",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "logout",
+        "responses": {
+          "204": {
+            "description": "User logged out successfully, no content"
+          },
+          "422": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Unable to get refreshToken or Unable to get claims",
+                  "errorCode": 422
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or Session not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "User not found or Session not found",
+                  "errorCode": 404
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/accessToken": {
+      "post": {
+        "summary": "Get new access token",
+        "description": "Generates a new access token using the refresh token.",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "accessToken",
+        "responses": {
+          "200": {
+            "description": "Access token generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessTokenResponse"
+                },
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZjI4ZjQwZjIwZjIwZjIwZjIwZjIwZjIiLCJpYXQiOjE1OTk4NzQwNzQsImV4cCI6MTU5OTg3NzY3NH0.71b9b8"
+                }
+              }
+            },
+            "headers": {
+              "Authorization": {
+                "description": "Bearer token for authorization",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or Session not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "User not found or Session not found",
+                  "errorCode": 404
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unable to get refreshToken or Unable to get claims or Session not valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "UnableToGetRefreshToken": {
+                    "summary": "Unable to get refreshToken",
+                    "value": {
+                      "message": "Unable to get refreshToken",
+                      "errorCode": 422
+                    }
+                  },
+                  "UnableToGetClaims": {
+                    "summary": "Unable to get claims",
+                    "value": {
+                      "message": "Unable to get claims",
+                      "errorCode": 422
+                    }
+                  },
+                  "SessionNotValid": {
+                    "summary": "Session not valid",
+                    "value": {
+                      "message": "Session not valid",
+                      "errorCode": 422
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/registerClient": {
+      "post": {
+        "summary": "Register a new client",
+        "description": "Creates a new client account in the system.",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "registerClient",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUserRequest"
+              },
+              "example": {
+                "username": "john_doe",
+                "password": "password123",
+                "email": "john_doe@example.com",
+                "name": "John Doe",
+                "surname": "Doe"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Client created successfully"
+          },
+          "400": {
+            "description": "Invalid request due to incorrect JSON format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Wrong JSON format",
+                  "errorCode": 400
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - Validation errors in the request body or Username already taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "UsernameTaken": {
+                    "summary": "Username already taken",
+                    "value": {
+                      "errors": [
+                        "Username already taken."
+                      ]
+                    }
+                  },
+                  "ValidationErrors": {
+                    "summary": "Validation errors in the request body",
+                    "value": {
+                      "errors": [
+                        "The Username field is required.",
+                        "The Password field is required.",
+                        "The Email field is required.",
+                        "The Name field is required.",
+                        "The Surname field is required."
+                      ]
+                    }
+                  },
+                  "NotAbleToCreateUser": {
+                    "summary": "Not able to create user",
+                    "value": {
+                      "errors": [
+                        "Not able to create user"
+                      ]
+                    }
+                  },
+                  "FailedToAssignRoleToUser": {
+                    "summary": "Failed to assign role to user",
+                    "value": {
+                      "errors": [
+                        "Failed to assign role to user"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/registerHotelPersonnel": {
+      "post": {
+        "summary": "Register a new hotel personnel",
+        "description": "Creates a new hotel personnel account in the system.",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "registerHotelPersonnel",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUserRequest"
+              },
+              "example": {
+                "username": "jane_smith",
+                "password": "password123",
+                "email": "john_doe@example.com",
+                "name": "Jane",
+                "surname": "Smith"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Hotel personnel created successfully"
+          },
+          "400": {
+            "description": "Invalid request due to incorrect JSON format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Wrong JSON format",
+                  "errorCode": 400
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - Validation errors in the request body or Username already taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "UsernameTaken": {
+                    "summary": "Username already taken",
+                    "value": {
+                      "errors": [
+                        "Username already taken."
+                      ]
+                    }
+                  },
+                  "ValidationErrors": {
+                    "summary": "Validation errors in the request body",
+                    "value": {
+                      "errors": [
+                        "The Username field is required.",
+                        "The Password field is required.",
+                        "The Email field is required.",
+                        "The Name field is required.",
+                        "The Surname field is required."
+                      ]
+                    }
+                  },
+                  "NotAbleToCreateUser": {
+                    "summary": "Not able to create user",
+                    "value": {
+                      "errors": [
+                        "Not able to create user"
+                      ]
+                    }
+                  },
+                  "FailedToAssignRoleToUser": {
+                    "summary": "Failed to assign role to user",
+                    "value": {
+                      "errors": [
+                        "Failed to assign role to user"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/hotels/{hotelId}/orders/{orderId}/comments": {
       "get": {
         "summary": "Retrieve all comments for a specific order",
@@ -75,6 +491,20 @@
                     "modifiedAt": "2024-09-02T10:35:00Z"
                   }
                 ]
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
               }
             }
           },
@@ -159,6 +589,20 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
                 }
               }
             }
@@ -280,6 +724,20 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
+          },
           "404": {
             "description": "Hotel, order, or comment not found, or the order does not belong to this hotel.",
             "content": {
@@ -371,6 +829,20 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
                 }
               }
             }
@@ -479,6 +951,20 @@
         "responses": {
           "204": {
             "description": "Comment successfully deleted"
+          },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
           },
           "404": {
             "description": "Hotel, order, or comment not found, or the order does not belong to this hotel.",
@@ -639,6 +1125,20 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
+          },
           "422": {
             "description": "Unprocessable Entity - Validation errors in the request body",
             "content": {
@@ -781,6 +1281,20 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
+          },
           "404": {
             "description": "Hotel not found",
             "content": {
@@ -858,6 +1372,20 @@
           "204": {
             "description": "Hotel deleted successfully, no content"
           },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
+          },
           "404": {
             "description": "Hotel not found",
             "content": {
@@ -882,6 +1410,92 @@
                 "example": {
                   "message": "Hotel cannot be deleted",
                   "errorCode": 409
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hotels/{hotelId}/myOrders": {
+      "get": {
+        "summary": "Get all orders for a specific hotel",
+        "description": "Fetches all orders for the specified hotel by hotel ID.",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "GetAllMyOrders",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the hotel to retrieve orders for",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of orders for the specified hotel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderResponse"
+                  },
+                  "example": [
+                    {
+                      "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                      "roomType": "Deluxe",
+                      "breakfast": true,
+                      "orderDate": "2024-09-29T12:34:56",
+                      "peopleCount": 2,
+                      "period": 3,
+                      "price": 300.00,
+                      "hotel": {
+                        "id": "a4c4d3a5-8b9b-4e2d-ae58-abcde456789f",
+                        "name": "Beach Resort",
+                        "location": "Miami",
+                        "photo": "https://example.com/hotels/beach.jpg",
+                        "breakfastPrice": 30,
+                        "standardPrice": 180,
+                        "deluxePrice": 250,
+                        "suitePrice": 380
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hotel not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Hotel not found",
+                  "errorCode": 404
                 }
               }
             }
@@ -940,6 +1554,20 @@
                       }
                     }
                   ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
                 }
               }
             }
@@ -1022,6 +1650,20 @@
                     "deluxePrice": 250,
                     "suitePrice": 380
                   }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
                 }
               }
             }
@@ -1133,6 +1775,20 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
+          },
           "404": {
             "description": "Either the hotel or the order was not found",
             "content": {
@@ -1235,6 +1891,20 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
+          },
           "404": {
             "description": "Hotel or order not found",
             "content": {
@@ -1325,6 +1995,20 @@
         "responses": {
           "204": {
             "description": "No Content, the order was successfully deleted."
+          },
+          "403": {
+            "description": "Forbidden - The user is not allowed to access this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "errorCode": 403
+                }
+              }
+            }
           },
           "404": {
             "description": "Hotel or order not found, or order has comments and cannot be deleted.",
@@ -1712,6 +2396,62 @@
               "type": "string"
             },
             "description": "List of validation errors"
+          }
+        }
+      },
+      "LoginUserRequest" : {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Username of the user"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password of the user"
+          }
+        }
+      },
+      "LoginUserResponse" : {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT token for the user"
+          }
+        }
+      },
+      "RegisterUserRequest" : {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Username of the user"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password of the user"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email of the user"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the user"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Surname of the user"
+          }
+        }
+      },
+      "AccessTokenResponse" : {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token"
           }
         }
       }
